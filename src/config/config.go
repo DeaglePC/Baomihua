@@ -30,7 +30,7 @@ var DefaultVendors = []VendorConfig{
 	{Name: "qwen", BaseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1"},
 	{Name: "glm", BaseURL: "https://open.bigmodel.cn/api/paas/v4"},
 	{Name: "kimi", BaseURL: "https://api.moonshot.cn/v1"},
-	{Name: "minimax", BaseURL: "https://api.minimax.chat/v1"},
+	{Name: "minimax", BaseURL: "https://api.minimaxi.com/v1"},
 	{Name: "claude", BaseURL: "https://api.anthropic.com/v1"}, // May need specific provider logic later
 	{Name: "gemini", BaseURL: "https://generativelanguage.googleapis.com/v1beta/openai"},
 	{Name: "ernie", BaseURL: "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat"}, // Requires custom adapter mapping potentially
@@ -65,6 +65,15 @@ func InitConfig() {
 	if err := viper.Unmarshal(&Cfg); err != nil {
 		fmt.Println("Error unmarshaling config:", err)
 	}
+
+	// Filter out empty vendors injected by Unmarshal
+	var validVendors []VendorConfig
+	for _, v := range Cfg.Vendors {
+		if v.Name != "" || v.BaseURL != "" {
+			validVendors = append(validVendors, v)
+		}
+	}
+	Cfg.Vendors = validVendors
 
 	// Override model via environment variables if present
 	if envModel := os.Getenv("BAOMIHUA_MODEL"); envModel != "" {
@@ -105,6 +114,9 @@ func InitConfig() {
 	// 4. Load Custom Vendors generically
 	customVendors := viper.GetStringMapString("vendors")
 	for name, url := range customVendors {
+		if strings.TrimSpace(name) == "" || strings.TrimSpace(url) == "" {
+			continue
+		}
 		// Check if it's already a default vendor
 		isDefault := false
 		for _, v := range Cfg.Vendors {

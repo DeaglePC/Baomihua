@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"baomihua/config"
@@ -156,18 +157,16 @@ func (p *OpenAICompatibleProvider) StreamCompletion(model, prompt string, ctx En
 
 // ParseResult parses the accumulated raw string from the stream into Result
 func ParseResult(raw string) (*Result, error) {
-	// Attempt to strip potential markdown codeblock formatting that models ignore prompt instructions for sometimes
-	raw = strings.TrimSpace(raw)
-	if strings.HasPrefix(raw, "```json") {
-		raw = strings.TrimPrefix(raw, "```json")
-	} else if strings.HasPrefix(raw, "```") {
-		raw = strings.TrimPrefix(raw, "```")
+	// Use regex to locate the outermost JSON object{} to strip away potential <think> tags or conversational filler
+	re := regexp.MustCompile(`(?s)\{.*\}`)
+	jsonBytes := re.Find([]byte(raw))
+
+	if len(jsonBytes) == 0 {
+		return nil, fmt.Errorf("could not locate valid JSON object in response: (raw response: %s)", raw)
 	}
-	raw = strings.TrimSuffix(raw, "```")
-	raw = strings.TrimSpace(raw)
 
 	var res Result
-	if err := json.Unmarshal([]byte(raw), &res); err != nil {
+	if err := json.Unmarshal(jsonBytes, &res); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal JSON: %w (raw response: %s)", err, raw)
 	}
 	return &res, nil

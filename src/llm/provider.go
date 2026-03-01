@@ -203,13 +203,24 @@ type openAIModelsResponse struct {
 }
 
 func (p *OpenAICompatibleProvider) GetAvailableModels() ([]string, error) {
+	if p.vendor.Name == "minimax" {
+		// Minimax API does not natively support the /v1/models endpoint to list available models.
+		// Return a static list of their most common models.
+		return []string{
+			"MiniMax-M2.5",
+			"MiniMax-M2.5-highspeed",
+			"MiniMax-M2.1",
+			"MiniMax-M2.1-highspeed",
+			"MiniMax-M2",
+		}, nil
+	}
+
 	url := strings.TrimRight(p.vendor.BaseURL, "/") + "/models"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
-
 	req.Header.Set("Authorization", "Bearer "+p.vendor.APIKey)
 
 	client := &http.Client{Timeout: 10 * time.Second}
