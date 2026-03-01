@@ -57,4 +57,3 @@ mv bmh "$INSTALL_DIR/bmh"
 echo "Installation complete."
 echo "Running initialization..."
 "$INSTALL_DIR/bmh" install
-
