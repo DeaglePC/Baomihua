@@ -1,5 +1,9 @@
 <h1 align="center">🐆 BaoMiHua</h1>
 
+<p align="center">
+  <strong>English</strong> | <a href="README_ZH.md">中文</a>
+</p>
+
 > **A "Bengal cat" lurking in your terminal—your exclusive, ultra-fast AI command assistant.**
 
 BaoMiHua (`bmh` or `bao`) is a terminal-based AI assistant built with Go. It boasts a blazing-fast cold start experience and an elegant, high-value interactive UI. It sharply perceives your current operating system and shell environment, turning your natural language into precise shell commands while offering a safe, seamless interactive execution experience.
@@ -151,6 +155,10 @@ After analyzing the model's response, the breakdown will be displayed, and you w
 - Configuration Management: [Viper](https://github.com/spf13/viper)
 - Terminal UI & State Machine: [Bubble Tea](https://github.com/charmbracelet/bubbletea)
 - CSS Styling / Engine: [Lip Gloss](https://github.com/charmbracelet/lipgloss)
+
+## 💖 Support the Project
+
+If you find BaoMiHua helpful, please consider giving it a ⭐️ star on GitHub! It helps more people discover this tool and motivates further development.
 
 ---
 > 🐆 *BaoMiHua - A fierce beast in the terminal, taming the complex CLI world for you.*

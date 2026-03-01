@@ -1,5 +1,9 @@
 <h1 align="center">🐆 BaoMiHua (豹米花)</h1>
 
+<p align="center">
+  <a href="README.md">English</a> | <strong>中文</strong>
+</p>
+
 > **一个存在于终端里的“孟加拉豹猫”——你的专属极速 AI 终端指令助手。**
 
 BaoMiHua (`bmh` 或 `bao`) 是一个基于 Go 语言构建的终端 AI 助手。它拥有极速的冷启动体验和高颜值的交互界面 (UI)。它能敏锐感知当前的操作系统与 Shell 环境，将你的自然语言精妙地转化为精准的 Shell 命令，并提供安全、无缝的交互执行体验。
@@ -155,6 +159,10 @@ bmh 查出占用 8080 端口的进程并强制杀掉
 - 配置管理：[Viper](https://github.com/spf13/viper)
 - 终端界面与状态机：[Bubble Tea](https://github.com/charmbracelet/bubbletea)
 - CSS 样式渲染引擎：[Lip Gloss](https://github.com/charmbracelet/lipgloss)
+
+## 💖 支持项目
+
+如果你觉得 BaoMiHua 对你有帮助，请在 GitHub 上给它点一个 ⭐️ Star！这会帮助更多人发现这个工具，也会给我带来更多更新的动力。
 
 ---
 > 🐆 *BaoMiHua - 终端里的一只猛兽，为你驯服繁杂的命令行世界。*
