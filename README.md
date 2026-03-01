@@ -15,10 +15,25 @@ BaoMiHua (`bmh` 或 `bao`) 是一个基于 Go 语言构建的终端 AI 助手。
 
 ## 📦 安装
 
+### 一键安装脚本 (推荐)
+
+最快速的安装方式，这会自动检测你的系统类型并下载安装预编译好的二进制文件并配置到环境变量。
+
+**macOS / Linux**
+```bash
+curl -fsSL https://raw.githubusercontent.com/DeaglePC/Baomihua/main/install.sh | bash
+```
+
+**Windows (PowerShell)**
+```powershell
+Invoke-RestMethod -Uri https://raw.githubusercontent.com/DeaglePC/Baomihua/main/install.ps1 | Invoke-Expression
+```
+
+### 源码编译安装 (备选)
 请确保系统已安装 [Go](https://go.dev/) (推荐 1.20 及以上版本)。
 
 ```bash
-git clone https://github.com/yourusername/Baomihua.git
+git clone https://github.com/DeaglePC/Baomihua.git
 cd Baomihua/src
 go build -o bmh
 # 将 bmh 移动到系统的 PATH 目录下，例如：
