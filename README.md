@@ -17,6 +17,17 @@ BaoMiHua (`bmh` or `bao`) is a terminal-based AI assistant built with Go. It boa
 - 🎨 **Elegant Aesthetics**: Features a sleek terminal UI powered by `Bubble Tea`, complete with silky loading animations (`bubbles/spinner`) that breathe life into the cold terminal.
 - 🧩 **1-Click Seamless Execution**: Allows you to directly copy, execute, or seamlessly inject the generated command straight into your current terminal prompt.
 
+## 🆚 Comparison & Use Cases
+
+How does **BaoMiHua** compare to other AI terminal tools like **Claude Code** or **Gemini CLI**?
+
+- **Claude Code / Gemini CLI**: These are typically **Agentic** tools designed for complex, multi-step software engineering tasks. They can read your entire codebase, modify files, run tests, and iterate over long conversations. They are powerful but heavier, and usually take longer to start and respond.
+- **BaoMiHua**: This is a **Single-turn Command Assistant**. It is designed for extreme speed and everyday terminal operations. It does not read your codebase or chat with you. Instead, it instantly translates your natural language into the exact shell command you need *right now* (e.g., finding a port, extracting a tarball, checking IPs) and helps you execute it safely.
+
+**When to use which?**
+- Use **Claude Code / Gemini CLI** when you want to: *"Refactor the authentication module and write unit tests."*
+- Use **BaoMiHua** when you want to: *"Find the process occupying port 8080 and forcefully kill it"* or *"Find the largest file in this directory."*
+
 ## 📦 Installation
 
 ### One-line Install Script (Recommended)
