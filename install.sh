@@ -55,5 +55,11 @@ chmod +x bmh
 mv bmh "$INSTALL_DIR/bmh"
 
 echo "Installation complete."
-echo "Running initialization..."
-"$INSTALL_DIR/bmh" install
+
+if [ -n "$SUDO_USER" ]; then
+  echo "Because bmh was installed via sudo, initialization was skipped."
+  echo "Please run 'bmh install' as your regular user to complete setup."
+else
+  echo "Running initialization..."
+  "$INSTALL_DIR/bmh" install
+fi
