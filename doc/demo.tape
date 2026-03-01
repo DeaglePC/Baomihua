@@ -16,7 +16,7 @@ Set MarginFill "#6B50FF"
 Set Margin 20
 
 Hide
-Type 'eval "$(bmh init $(basename $SHELL))"'
+Type 'eval "$(bmh --init $(basename $SHELL))"'
 Enter
 Type "clear"
 Enter
