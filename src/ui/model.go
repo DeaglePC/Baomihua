@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"strings"
+	"unicode"
 
 	"baomihua/executor"
 	"baomihua/guard"
@@ -38,6 +39,7 @@ type menuItem struct {
 
 type model struct {
 	prompt    string
+	isZH      bool
 	ctx       llm.EnvContext
 	state     state
 	err       error
@@ -52,6 +54,15 @@ type model struct {
 
 type errMsg struct{ err error }
 
+func IsChinese(s string) bool {
+	for _, r := range s {
+		if unicode.Is(unicode.Han, r) {
+			return true
+		}
+	}
+	return false
+}
+
 func InitialModel(prompt string) model {
 	s := spinner.New()
 	s.Spinner = spinner.Line
@@ -59,6 +70,7 @@ func InitialModel(prompt string) model {
 
 	return model{
 		prompt:  prompt,
+		isZH:    IsChinese(prompt),
 		ctx:     llm.GetEnvContext(),
 		state:   stateLoading,
 		spinner: s,
@@ -111,14 +123,26 @@ func (m model) startStreamingCmd() tea.Cmd {
 		var items []menuItem
 
 		if lvl != guard.Danger {
-			items = append(items, menuItem{label: "⚡️ 直接执行 (Execute)", action: ActionExecute})
+			if m.isZH {
+				items = append(items, menuItem{label: "⚡️ 直接执行 (Execute)", action: ActionExecute})
+			} else {
+				items = append(items, menuItem{label: "⚡️ Execute", action: ActionExecute})
+			}
 		}
 
-		items = append(items,
-			menuItem{label: "🐾 插入终端 (Insert to prompt)", action: ActionInject},
-			menuItem{label: "📋 复制命令 (Copy)", action: ActionCopy},
-			menuItem{label: "🛑 放弃 (Cancel)", action: ActionCancel},
-		)
+		if m.isZH {
+			items = append(items,
+				menuItem{label: "🐾 插入终端 (Insert to prompt)", action: ActionInject},
+				menuItem{label: "📋 复制命令 (Copy)", action: ActionCopy},
+				menuItem{label: "🛑 放弃 (Cancel)", action: ActionCancel},
+			)
+		} else {
+			items = append(items,
+				menuItem{label: "🐾 Insert to prompt", action: ActionInject},
+				menuItem{label: "📋 Copy", action: ActionCopy},
+				menuItem{label: "🛑 Cancel", action: ActionCancel},
+			)
+		}
 
 		return struct {
 			res   *llm.Result
@@ -198,21 +222,45 @@ func (m model) handleChoice() (tea.Model, tea.Cmd) {
 	case ActionInject:
 		err := executor.InjectToTerminal(m.parsed.Command)
 		if err != nil {
-			m.exitMsg = fmt.Sprintf("\n❌ 插入失败: %v", err)
+			if m.isZH {
+				m.exitMsg = fmt.Sprintf("\n❌ 插入失败: %v", err)
+			} else {
+				m.exitMsg = fmt.Sprintf("\n❌ Injection failed: %v", err)
+			}
 		} else {
-			m.exitMsg = "\n✅ 已写入终端! (请按回车执行)"
+			if m.isZH {
+				m.exitMsg = "\n✅ 已写入终端! (请按回车执行)"
+			} else {
+				m.exitMsg = "\n✅ Injected into terminal! (Press Enter to execute)"
+			}
 		}
 	case ActionExecute:
-		m.exitMsg = fmt.Sprintf("\n🚀 正在执行命令: %s", m.parsed.Command)
+		if m.isZH {
+			m.exitMsg = fmt.Sprintf("\n🚀 正在执行命令: %s", m.parsed.Command)
+		} else {
+			m.exitMsg = fmt.Sprintf("\n🚀 Executing command: %s", m.parsed.Command)
+		}
 	case ActionCopy:
 		err := executor.CopyToClipboard(m.parsed.Command)
 		if err != nil {
-			m.exitMsg = fmt.Sprintf("\n❌ 复制失败: %v", err)
+			if m.isZH {
+				m.exitMsg = fmt.Sprintf("\n❌ 复制失败: %v", err)
+			} else {
+				m.exitMsg = fmt.Sprintf("\n❌ Copy failed: %v", err)
+			}
 		} else {
-			m.exitMsg = "\n✅ 已复制到剪贴板!"
+			if m.isZH {
+				m.exitMsg = "\n✅ 已复制到剪贴板!"
+			} else {
+				m.exitMsg = "\n✅ Copied to clipboard!"
+			}
 		}
 	case ActionCancel:
-		m.exitMsg = "\n🛑 已放弃执行"
+		if m.isZH {
+			m.exitMsg = "\n🛑 已放弃执行"
+		} else {
+			m.exitMsg = "\n🛑 Execution canceled"
+		}
 	}
 
 	m.isDone = true
@@ -226,21 +274,41 @@ func (m model) View() string {
 
 	switch m.state {
 	case stateError:
-		return DangerStyle.Render(fmt.Sprintf("\n❌ 发生错误: %v\n", m.err))
+		if m.isZH {
+			return DangerStyle.Render(fmt.Sprintf("\n❌ 发生错误: %v\n", m.err))
+		}
+		return DangerStyle.Render(fmt.Sprintf("\n❌ Error occurred: %v\n", m.err))
 	case stateLoading:
-		return fmt.Sprintf("\n %s %s\n", m.spinner.View(), lipgloss.NewStyle().Foreground(lipgloss.Color("205")).Render(fmt.Sprintf("豹米花正在潜伏思考如何 %q...", m.prompt)))
+		if m.isZH {
+			return fmt.Sprintf("\n %s %s\n", m.spinner.View(), lipgloss.NewStyle().Foreground(lipgloss.Color("205")).Render(fmt.Sprintf("豹米花正在潜伏思考如何 %q...", m.prompt)))
+		}
+		return fmt.Sprintf("\n %s %s\n", m.spinner.View(), lipgloss.NewStyle().Foreground(lipgloss.Color("205")).Render(fmt.Sprintf("BaoMiHua is thinking about how to %q...", m.prompt)))
+
 	case stateResult:
 		var sb strings.Builder
 
 		sb.WriteString("\n")
-		sb.WriteString(TitleStyle.Render("💻 命令 (Command): ") + TargetStyle.Render(m.parsed.Command) + "\n")
-		sb.WriteString(TitleStyle.Render("🐆 解释 (Explanation): ") + ExplanationStyle.Render(m.parsed.Explanation) + "\n\n")
-
-		if m.safetyLvl == guard.Danger {
-			sb.WriteString(DangerStyle.Render("⚠️ 警告：豹米花察觉到极度危险的操作，请谨慎行事！") + "\n\n")
+		if m.isZH {
+			sb.WriteString(TitleStyle.Render("💻 命令 (Command): ") + TargetStyle.Render(m.parsed.Command) + "\n")
+			sb.WriteString(TitleStyle.Render("🐆 解释 (Explanation): ") + ExplanationStyle.Render(m.parsed.Explanation) + "\n\n")
+		} else {
+			sb.WriteString(TitleStyle.Render("💻 Command: ") + TargetStyle.Render(m.parsed.Command) + "\n")
+			sb.WriteString(TitleStyle.Render("🐆 Explanation: ") + ExplanationStyle.Render(m.parsed.Explanation) + "\n\n")
 		}
 
-		sb.WriteString("请选择下一步动作:\n")
+		if m.safetyLvl == guard.Danger {
+			if m.isZH {
+				sb.WriteString(DangerStyle.Render("⚠️ 警告：豹米花察觉到极度危险的操作，请谨慎行事！") + "\n\n")
+			} else {
+				sb.WriteString(DangerStyle.Render("⚠️ Warning: BaoMiHua detected an extremely dangerous operation, proceed with caution!") + "\n\n")
+			}
+		}
+
+		if m.isZH {
+			sb.WriteString("请选择下一步动作:\n")
+		} else {
+			sb.WriteString("Select next action:\n")
+		}
 
 		for i, item := range m.menuItems {
 			cursor := "  "
@@ -281,10 +349,18 @@ func RunUI(prompt string) (*llm.Result, Action, string, error) {
 		var sb strings.Builder
 		if finalModel.parsed != nil {
 			sb.WriteString("\n")
-			sb.WriteString(TitleStyle.Render("💻 命令 (Command): ") + TargetStyle.Render(finalModel.parsed.Command) + "\n")
-			sb.WriteString(TitleStyle.Render("🐆 解释 (Explanation): ") + ExplanationStyle.Render(finalModel.parsed.Explanation) + "\n\n")
-			if finalModel.safetyLvl == guard.Danger {
-				sb.WriteString(DangerStyle.Render("⚠️ 警告：豹米花察觉到极度危险的操作，请谨慎行事！") + "\n\n")
+			if finalModel.isZH {
+				sb.WriteString(TitleStyle.Render("💻 命令 (Command): ") + TargetStyle.Render(finalModel.parsed.Command) + "\n")
+				sb.WriteString(TitleStyle.Render("🐆 解释 (Explanation): ") + ExplanationStyle.Render(finalModel.parsed.Explanation) + "\n\n")
+				if finalModel.safetyLvl == guard.Danger {
+					sb.WriteString(DangerStyle.Render("⚠️ 警告：豹米花察觉到极度危险的操作，请谨慎行事！") + "\n\n")
+				}
+			} else {
+				sb.WriteString(TitleStyle.Render("💻 Command: ") + TargetStyle.Render(finalModel.parsed.Command) + "\n")
+				sb.WriteString(TitleStyle.Render("🐆 Explanation: ") + ExplanationStyle.Render(finalModel.parsed.Explanation) + "\n\n")
+				if finalModel.safetyLvl == guard.Danger {
+					sb.WriteString(DangerStyle.Render("⚠️ Warning: BaoMiHua detected an extremely dangerous operation, proceed with caution!") + "\n\n")
+				}
 			}
 		}
 		sb.WriteString(finalModel.exitMsg + "\n")

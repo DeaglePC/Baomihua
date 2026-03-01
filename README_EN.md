@@ -21,7 +21,7 @@ The fastest way to install. This script automatically detects your system type, 
 
 **macOS / Linux**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/DeaglePC/Baomihua/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/DeaglePC/Baomihua/main/install.sh | bash
 ```
 
 **Windows (PowerShell)**

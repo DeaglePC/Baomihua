@@ -52,6 +52,7 @@ CURRENT ENVIRONMENT:
 
 REQUIREMENTS:
 1. The generated shell command MUST be compatible with the current OS and Shell.
+   - If Operating System is "darwin" (macOS), assume standard BSD-style CLI tools (e.g., BSD 'sed', 'ps', 'grep', 'date') instead of GNU-style tools, unless otherwise specified.
 2. If the user's request is ambiguous or inherently dangerous, output a safe alternative or explain why it cannot be done directly.
 3. You MUST return the result in strictly JSON format.
 4. Your output MUST be ONLY a JSON object with two string fields:

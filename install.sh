@@ -40,26 +40,23 @@ curl -L -o bmh "$DOWNLOAD_URL"
 
 # Install binary
 INSTALL_DIR="/usr/local/bin"
-if [ ! -w "$INSTALL_DIR" ]; then
-  echo "No write permission for $INSTALL_DIR. Attempting to install to ~/.local/bin"
-  INSTALL_DIR="$HOME/.local/bin"
-  mkdir -p "$INSTALL_DIR"
-  if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
-    echo "WARNING: $INSTALL_DIR is not in your PATH. Please add it manually."
-    echo 'Export PATH=$HOME/.local/bin:$PATH in your shell configuration.'
-  fi
+
+SUDO_CMD=""
+# Check if we need sudo to write to INSTALL_DIR (or create it)
+if [ ! -d "$INSTALL_DIR" ] || [ ! -w "$INSTALL_DIR" ]; then
+  SUDO_CMD="sudo"
+  echo "Elevating privileges to install to $INSTALL_DIR (you may be prompted for password)..."
+fi
+
+# Ensure directory exists
+if [ ! -d "$INSTALL_DIR" ]; then
+  $SUDO_CMD mkdir -p "$INSTALL_DIR"
 fi
 
 echo "Installing bmh to $INSTALL_DIR..."
 chmod +x bmh
-mv bmh "$INSTALL_DIR/bmh"
+$SUDO_CMD mv bmh "$INSTALL_DIR/bmh"
 
 echo "Installation complete."
-
-if [ -n "$SUDO_USER" ]; then
-  echo "Because bmh was installed via sudo, initialization was skipped."
-  echo "Please run 'bmh install' as your regular user to complete setup."
-else
-  echo "Running initialization..."
-  "$INSTALL_DIR/bmh" install
-fi
+echo "Running initialization..."
+"$INSTALL_DIR/bmh" install

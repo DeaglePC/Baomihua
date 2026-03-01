@@ -21,7 +21,7 @@ BaoMiHua (`bmh` 或 `bao`) 是一个基于 Go 语言构建的终端 AI 助手。
 
 **macOS / Linux**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/DeaglePC/Baomihua/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/DeaglePC/Baomihua/main/install.sh | bash
 ```
 
 **Windows (PowerShell)**

@@ -86,7 +86,11 @@ var rootCmd = &cobra.Command{
 
 		res, action, exitStr, err := ui.RunUI(prompt)
 		if err != nil {
-			fmt.Printf("❌ 发生致命错误: %v\n", err)
+			if ui.IsChinese(prompt) {
+				fmt.Printf("❌ 发生致命错误: %v\n", err)
+			} else {
+				fmt.Printf("❌ Fatal error: %v\n", err)
+			}
 			os.Exit(1)
 		}
 
@@ -98,7 +102,11 @@ var rootCmd = &cobra.Command{
 			fmt.Println()
 			err := executor.ExecuteCommand(res.Command, llm.GetEnvContext())
 			if err != nil {
-				fmt.Printf("\n❌ 执行异常: %v\n", err)
+				if ui.IsChinese(prompt) {
+					fmt.Printf("\n❌ 执行异常: %v\n", err)
+				} else {
+					fmt.Printf("\n❌ Execution exception: %v\n", err)
+				}
 				os.Exit(1)
 			}
 		}
