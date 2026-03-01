@@ -25,7 +25,7 @@ func InstallWrapper() {
 		shell = "powershell"
 
 		// Find PowerShell Profile path
-		profileCmd := exec.Command("powershell", "-NoProfile", "-Command", "[Console]::Out.Write($PROFILE)")
+		profileCmd := exec.Command("powershell", "-NoProfile", "-Command", "Write-Output (Join-Path (Split-Path $PROFILE.CurrentUserAllHosts -Parent) 'Microsoft.PowerShell_profile.ps1')")
 		var out bytes.Buffer
 		profileCmd.Stdout = &out
 		if err := profileCmd.Run(); err == nil && out.String() != "" {

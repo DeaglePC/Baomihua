@@ -50,10 +50,12 @@ alias "??"=bmh
 		}
 		fmt.Printf(`
 function bmh {
+    param([parameter(ValueFromRemainingArguments=$true)] $Rest)
+
     $tmp_cmd_file = [System.IO.Path]::GetTempFileName()
     $env:BAOMIHUA_CMD_OUTPUT = $tmp_cmd_file
     
-    & "%s" @args
+    & "%s" $Rest
     
     if (Test-Path $tmp_cmd_file) {
         $content = Get-Content $tmp_cmd_file -Raw | Out-String
