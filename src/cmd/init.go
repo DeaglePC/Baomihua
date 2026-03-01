@@ -34,7 +34,8 @@ function bmh() {
     fi
     rm -f "$tmp_cmd_file"
 }
-alias "??"=bmh
+alias bmh="noglob bmh"
+alias "??"="noglob bmh"
 `)
 		case "bash":
 			fmt.Print(`

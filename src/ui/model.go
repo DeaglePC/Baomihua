@@ -5,6 +5,7 @@ import (
 	"strings"
 	"unicode"
 
+	"baomihua/config"
 	"baomihua/executor"
 	"baomihua/guard"
 	"baomihua/llm"
@@ -279,10 +280,17 @@ func (m model) View() string {
 		}
 		return DangerStyle.Render(fmt.Sprintf("\n❌ Error occurred: %v\n", m.err))
 	case stateLoading:
+		modelName := config.GetModel()
+		modelStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("86")).Render("[" + modelName + "]")
+		textStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
+		
 		if m.isZH {
-			return fmt.Sprintf("\n %s %s\n", m.spinner.View(), lipgloss.NewStyle().Foreground(lipgloss.Color("205")).Render(fmt.Sprintf("豹米花正在潜伏思考如何 %q...", m.prompt)))
+			msg := fmt.Sprintf("豹米花 %s 正在思考如何 %q...", modelStyle, m.prompt)
+			return fmt.Sprintf("\n %s %s\n", m.spinner.View(), textStyle.Render(msg))
 		}
-		return fmt.Sprintf("\n %s %s\n", m.spinner.View(), lipgloss.NewStyle().Foreground(lipgloss.Color("205")).Render(fmt.Sprintf("BaoMiHua is thinking about how to %q...", m.prompt)))
+		
+		msg := fmt.Sprintf("BaoMiHua %s is thinking about how to %q...", modelStyle, m.prompt)
+		return fmt.Sprintf("\n %s %s\n", m.spinner.View(), textStyle.Render(msg))
 
 	case stateResult:
 		var sb strings.Builder

@@ -43,8 +43,7 @@ Type "clear"
 Enter
 Sleep 1s
 
-# Find the top 5 memory-consuming processes, output PID and Name
-Type "?? Find the top 5 memory-consuming processes, output PID and name"
+Type "?? show my local ip addr"
 Sleep 500ms
 Enter
 Sleep 4s
@@ -55,8 +54,7 @@ Type "clear"
 Enter
 Sleep 1s
 
-# Find the top 5 CPU-intensive processes
-Type "?? Find the top 5 CPU-intensive processes"
+Type "?? find max file in this folder"
 Sleep 500ms
 Enter
 Sleep 4s
