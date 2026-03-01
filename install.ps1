@@ -19,7 +19,8 @@ try {
         throw "Asset $FILE not found in the latest release."
     }
     $downloadUrl = $asset.browser_download_url
-} catch {
+}
+catch {
     Write-Host "Failed to retrieve the download URL. Exception: $_" -ForegroundColor Red
     exit 1
 }
@@ -47,4 +48,5 @@ if ($UserPath -notmatch [regex]::Escape($InstallDir)) {
 Write-Host "Installation complete." -ForegroundColor Green
 Write-Host "Running initialization..." -ForegroundColor Cyan
 
-& "$DestFile" init
+& "$DestFile" install
+
