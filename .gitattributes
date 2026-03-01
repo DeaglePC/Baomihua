@@ -1,0 +1,10 @@
+# 默认情况交给 Git 处理（或者设置 text=auto）
+* text=auto
+
+# 强制规定 .sh 等脚本文件永远使用 LF (Unix) 换行符
+*.sh text eol=lf
+
+# 强制规定 .ps1 和 .bat 脚本文件永远使用 CRLF (Windows) 换行符
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+
