@@ -59,4 +59,4 @@ $SUDO_CMD mv bmh "$INSTALL_DIR/bmh"
 
 echo "Installation complete."
 echo "Running initialization..."
-"$INSTALL_DIR/bmh" install
+"$INSTALL_DIR/bmh" --install

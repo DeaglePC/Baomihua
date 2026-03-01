@@ -15,9 +15,11 @@ import (
 )
 
 var (
-	modelFlag  string
-	listFlag   bool
-	switchFlag string
+	modelFlag   string
+	listFlag    bool
+	switchFlag  string
+	installFlag bool
+	initFlag    string
 )
 
 var Version = "dev"
@@ -32,6 +34,16 @@ var rootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		llm.InitRegistry()
 		forceRefresh, _ := cmd.Flags().GetBool("refresh")
+
+		if installFlag {
+			InstallWrapper()
+			return
+		}
+
+		if initFlag != "" {
+			InitWrapper(initFlag)
+			return
+		}
 
 		if switchFlag != "" {
 			err := config.UpdateDefaultModel(switchFlag)
@@ -129,6 +141,8 @@ func init() {
 	rootCmd.Flags().BoolVarP(&listFlag, "list", "l", false, "List supported models")
 	rootCmd.Flags().StringVarP(&switchFlag, "switch", "s", "", "Set the default model persistently (format: vendor/model)")
 	rootCmd.Flags().BoolP("refresh", "r", false, "Force refresh the models cache from configured vendors")
+	rootCmd.Flags().BoolVar(&installFlag, "install", false, "Install the bmh shell wrapper into your terminal profile")
+	rootCmd.Flags().StringVar(&initFlag, "init", "", "Generate shell wrapper script for terminal injection (e.g. --init zsh)")
 
 	// Bind flag to viper
 	viper.BindPFlag("model", rootCmd.PersistentFlags().Lookup("model"))

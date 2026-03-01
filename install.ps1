@@ -48,5 +48,5 @@ if ($UserPath -notmatch [regex]::Escape($InstallDir)) {
 Write-Host "Installation complete." -ForegroundColor Green
 Write-Host "Running initialization..." -ForegroundColor Cyan
 
-& "$DestFile" install
+& "$DestFile" --install
 

@@ -3,27 +3,18 @@ package cmd
 import (
 	"fmt"
 	"os"
-
-	"github.com/spf13/cobra"
 )
 
-var initCmd = &cobra.Command{
-	Use:   "init [shell]",
-	Short: "Generate shell wrapper script for terminal injection",
-	Long: `Generate a shell wrapper script allowing bmh to inject commands directly into the terminal prompt.
-Currently supports: zsh, bash, powershell.
-
-Add the following to your shell configuration file:
-Zsh (~/.zshrc):   eval "$(bmh init zsh)"
-Bash (~/.bashrc): eval "$(bmh init bash)"
-PowerShell ($PROFILE): Invoke-Expression (bmh init powershell | Out-String)
-`,
-	Args: cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		shell := args[0]
-		switch shell {
-		case "zsh":
-			fmt.Print(`
+// InitWrapper generates a shell wrapper script allowing bmh to inject commands
+// directly into the terminal prompt. Currently supports: zsh, bash, powershell.
+// Add the following to your shell configuration file:
+// Zsh (~/.zshrc):   eval "$(bmh --init zsh)"
+// Bash (~/.bashrc): eval "$(bmh --init bash)"
+// PowerShell ($PROFILE): Invoke-Expression (& bmh --init powershell | Out-String)
+func InitWrapper(shell string) {
+	switch shell {
+	case "zsh":
+		fmt.Print(`
 function bmh() {
     local tmp_cmd_file=$(mktemp)
     BAOMIHUA_CMD_OUTPUT="$tmp_cmd_file" command bmh "$@"
@@ -37,8 +28,8 @@ function bmh() {
 alias bmh="bmh"
 alias "??"="bmh"
 `)
-		case "bash":
-			fmt.Print(`
+	case "bash":
+		fmt.Print(`
 function bmh() {
     local tmp_cmd_file=$(mktemp)
     BAOMIHUA_CMD_OUTPUT="$tmp_cmd_file" command bmh "$@"
@@ -52,12 +43,12 @@ function bmh() {
 }
 alias "??"=bmh
 `)
-		case "powershell":
-			exePath, err := os.Executable()
-			if err != nil {
-				exePath = "bmh.exe"
-			}
-			fmt.Printf(`
+	case "powershell":
+		exePath, err := os.Executable()
+		if err != nil {
+			exePath = "bmh.exe"
+		}
+		fmt.Printf(`
 function bmh {
     $tmp_cmd_file = [System.IO.Path]::GetTempFileName()
     $env:BAOMIHUA_CMD_OUTPUT = $tmp_cmd_file
@@ -94,12 +85,7 @@ public class Keyboard {
 }
 Set-Alias -Name "??" -Value "bmh"
 `, exePath)
-		default:
-			fmt.Printf("Unsupported shell: %s. Supported shells are zsh, bash, powershell.\n", shell)
-		}
-	},
-}
-
-func init() {
-	rootCmd.AddCommand(initCmd)
+	default:
+		fmt.Printf("Unsupported shell: %s. Supported shells are zsh, bash, powershell.\n", shell)
+	}
 }
