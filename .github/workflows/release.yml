@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   build:
-    name: Build and Release
+    name: Build Binaries
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -36,7 +36,26 @@ jobs:
           fi
           GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -ldflags="-s -w" -o ../$output_name ./main.go
 
-      - name: Upload Release Asset
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bmh-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: bmh-${{ matrix.goos }}-${{ matrix.goarch }}*
+          retention-days: 1
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: bmh-*
+          merge-multiple: true
+
+      - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v2
         with:
-          files: bmh-${{ matrix.goos }}-${{ matrix.goarch }}*
+          files: artifacts/*
