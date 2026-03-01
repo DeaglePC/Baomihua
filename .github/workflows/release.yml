@@ -34,7 +34,8 @@ jobs:
           if [ "${{ matrix.goos }}" = "windows" ]; then
             output_name=${output_name}.exe
           fi
-          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -ldflags="-s -w" -o ../$output_name ./main.go
+          VERSION=${GITHUB_REF#refs/tags/}
+          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -ldflags="-s -w -X 'baomihua/cmd.Version=${VERSION}'" -o ../$output_name ./main.go
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

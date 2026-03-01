@@ -20,12 +20,15 @@ var (
 	switchFlag string
 )
 
+var Version = "dev"
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "bmh [prompt...]",
-	Short: "BaoMiHua (🐆) - 终端 AI 专属指令助手",
-	Long:  `豹米花 (BaoMiHua) 能够感知当前操作系统与 Shell 环境，将自然语言转化为精准的 Shell 命令，并在终端中提供无缝的交互执行体验。`,
-	Args:  cobra.ArbitraryArgs,
+	Use:     "bmh [prompt...]",
+	Short:   "BaoMiHua (🐆) - 终端 AI 专属指令助手",
+	Long:    `豹米花 (BaoMiHua) 能够感知当前操作系统与 Shell 环境，将自然语言转化为精准的 Shell 命令，并在终端中提供无缝的交互执行体验。`,
+	Version: Version,
+	Args:    cobra.ArbitraryArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		llm.InitRegistry()
 		forceRefresh, _ := cmd.Flags().GetBool("refresh")
