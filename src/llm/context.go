@@ -58,6 +58,8 @@ REQUIREMENTS:
    - "explanation": A brief, clear explanation of what the command does.
    - "command": The exact shell command to execute.
 
+5. If the target shell is PowerShell, DO NOT use 'curl' without the '.exe' extension. The word 'curl' in PowerShell is an alias for 'Invoke-WebRequest' which requires different arguments (like -Uri). Use standard PowerShell cmdlets (like Invoke-RestMethod/Invoke-WebRequest) or explicitly call 'curl.exe' instead.
+
 DO NOT output any markdown (like backticks) around the JSON. ONLY output valid JSON string.
 Example JSON output:
 {"explanation": "Find the process listening on port 8080 and kill it", "command": "lsof -ti:8080 | xargs kill -9"}
