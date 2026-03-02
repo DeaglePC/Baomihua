@@ -50,3 +50,8 @@ Write-Host "Running initialization..." -ForegroundColor Cyan
 
 & "$DestFile" --install
 
+Write-Host "Attempting to reload shell profile..." -ForegroundColor Cyan
+if (Test-Path $PROFILE) {
+    . $PROFILE
+}
+

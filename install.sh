@@ -60,3 +60,10 @@ $SUDO_CMD mv bmh "$INSTALL_DIR/bmh"
 echo "Installation complete."
 echo "Running initialization..."
 "$INSTALL_DIR/bmh" --install
+
+echo "Attempting to reload shell profile..."
+if [ -n "$ZSH_VERSION" ] || [[ "$SHELL" == *"zsh"* ]]; then
+  source "$HOME/.zshrc" || true
+elif [ -n "$BASH_VERSION" ] || [[ "$SHELL" == *"bash"* ]]; then
+  source "$HOME/.bashrc" || true
+fi
