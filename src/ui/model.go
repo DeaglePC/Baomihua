@@ -162,7 +162,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		if m.state == stateResult {
 			switch msg.String() {
-			case "ctrl+c", "q":
+			case "ctrl+c", "q", "esc":
+				for i, item := range m.menuItems {
+					if item.action == ActionCancel {
+						m.cursor = i
+						return m.handleChoice()
+					}
+				}
 				m.isDone = true
 				return m, tea.Quit
 			case "up", "k":
@@ -180,11 +186,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if idx >= 0 && idx < len(m.menuItems) {
 					m.cursor = idx
 					return m.handleChoice()
+				} else if msg.String() == "4" {
+					for i, item := range m.menuItems {
+						if item.action == ActionCancel {
+							m.cursor = i
+							return m.handleChoice()
+						}
+					}
 				}
 			}
 		} else {
 			switch msg.String() {
-			case "ctrl+c", "q":
+			case "ctrl+c", "q", "esc":
 				m.isDone = true
 				return m, tea.Quit
 			}
@@ -283,12 +296,12 @@ func (m model) View() string {
 		modelName := config.GetModel()
 		modelStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("86")).Render("[" + modelName + "]")
 		textStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
-		
+
 		if m.isZH {
 			msg := fmt.Sprintf("豹米花 %s 正在思考如何 %q...", modelStyle, m.prompt)
 			return fmt.Sprintf("\n %s %s\n", m.spinner.View(), textStyle.Render(msg))
 		}
-		
+
 		msg := fmt.Sprintf("BaoMiHua %s is thinking about how to %q...", modelStyle, m.prompt)
 		return fmt.Sprintf("\n %s %s\n", m.spinner.View(), textStyle.Render(msg))
 
