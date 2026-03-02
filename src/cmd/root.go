@@ -89,6 +89,19 @@ var rootCmd = &cobra.Command{
 			return
 		}
 
+		if strings.ToLower(strings.TrimSpace(prompt)) == "fuck" {
+			lastCmd := strings.TrimSpace(os.Getenv("BAOMIHUA_LAST_CMD"))
+			lastErr := strings.TrimSpace(os.Getenv("BAOMIHUA_LAST_ERROR"))
+
+			if lastErr != "" {
+				prompt = fmt.Sprintf("我刚刚运行的命令 `%s` 报错了，错误信息是: `%s`。请判断原因，并给我一个修复后的正确命令。", lastCmd, lastErr)
+			} else if lastCmd != "" {
+				prompt = fmt.Sprintf("我刚刚运行的命令 `%s` 似乎出错了（或不符合预期）。请帮我检查原因，并提供一个修复后的正确命令。", lastCmd)
+			} else {
+				prompt = "我刚才执行的命令出错了（或者遇到问题了），请帮我检查并提供正确的解决命令。"
+			}
+		}
+
 		// Pre-flight check: ensure at least one vendor is configured
 		if len(config.GetAllVendors()) == 0 {
 			fmt.Println("❌ Error: No API keys configured. Please configure at least one vendor's API key.")
