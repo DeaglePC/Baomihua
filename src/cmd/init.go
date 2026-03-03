@@ -33,7 +33,6 @@ function bmh() {
     fi
     rm -f "$tmp_cmd_file"
 }
-alias bmh="bmh"
 alias "??"="bmh"
 alias fuck="bmh fuck"
 `)
