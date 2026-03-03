@@ -85,8 +85,16 @@ var rootCmd = &cobra.Command{
 
 		prompt := strings.Join(args, " ")
 		if prompt == "" {
-			cmd.Help()
-			return
+			p, err := ui.RunPromptUI()
+			if err != nil {
+				fmt.Printf("❌ Interactive prompt error: %v\n", err)
+				os.Exit(1)
+			}
+			prompt = strings.TrimSpace(p)
+			if prompt == "" {
+				// User cancelled or submitted empty prompt
+				return
+			}
 		}
 
 		if strings.ToLower(strings.TrimSpace(prompt)) == "fuck" {
