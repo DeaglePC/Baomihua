@@ -28,10 +28,14 @@ echo "Detected system: $OS, Architecture: $ARCH"
 echo "Fetching latest release from $REPO..."
 
 # Fetch latest release URL
-DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | grep -o "https://.*releases/download/.*/$FILE")
+API_RESPONSE=$(curl -s "https://api.github.com/repos/$REPO/releases/latest")
+DOWNLOAD_URL=$(echo "$API_RESPONSE" | grep -o "https://[^\"]*releases/download/[^\"]*/$FILE" || true)
 
 if [ -z "$DOWNLOAD_URL" ]; then
-  echo "Failed to retrieve the download URL. The release might not exist for $OS/$ARCH."
+  echo "Failed to retrieve the download URL for '$FILE'."
+  echo "This could be due to: GitHub API rate limit, no release for $OS/$ARCH, or network issues."
+  echo "API response (first 500 chars):"
+  echo "$API_RESPONSE" | head -c 500
   exit 1
 fi
 
